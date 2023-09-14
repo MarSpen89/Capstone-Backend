@@ -7,7 +7,10 @@ from werkzeug.security import generate_password_hash
 import os
 from faker import Faker
 
+from auth import decrypt_data, encrypt_data
+
 app = Flask(__name__)
+CORS(app)
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///" + os.path.join(basedir, 'app.sqlite')
 app.config['SECRET_KEY'] = 'fym-yagmm'
@@ -16,7 +19,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 bcrypt = Bcrypt(app)
-CORS(app)
+
 fake = Faker()
 
 class User(db.Model):
@@ -40,7 +43,7 @@ multi_user_schema = UserSchema(many=True)
 
 @property
 def email(self):
-    return decrypt_data(self._email)
+    return decrypt_data.data(self._email)
 
 @email.setter
 def email(self, value):
@@ -75,10 +78,11 @@ def verification():
         return jsonify("Error: Provide credentials in JSON format."), 400
 
     post_data = request.get_json()
-    username = post_data.get("username")
+    email = post_data.get("email")
     password = post_data.get("password")
 
-    user = db.session.query(User).filter(User.username == username).first()
+    user = db.session.query(User).filter(User.email == email).first()
+    #print(user)
 
     if user is None or not bcrypt.check_password_hash(user.password, password):
         return jsonify("User could not be Verified"), 401
@@ -144,8 +148,19 @@ def add_fake_users(count=10):
     db.session.commit()
 
 
-if __name__ == '__main__':
-    with app.app_context():
+# if __name__ == '__main__':
+    # with app.app_context():
         # db.create_all()
         # add_fake_users(20)  # Add 20 fake users comment this line out after database starts
-    app.run(debug=True)
+        # app.run(debug=True)
+        
+if __name__ == '__main__':
+    host = 'localhost'
+    port = 5000
+    for rule in app.url_map.iter_rules():
+        print(f"HTTP Endpoint: http://{host}:{port}{rule}")
+        
+    with app.app_context():
+        db.create_all()
+        # add_fake_users(20)  # Add 20 fake users comment this line out after database starts
+    app.run(debug=True, host=host, port=port)
