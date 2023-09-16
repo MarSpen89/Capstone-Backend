@@ -12,7 +12,8 @@ from auth import decrypt_data, encrypt_data
 app = Flask(__name__)
 CORS(app)
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///" + os.path.join(basedir, 'app.sqlite')
+app.config['SQLALCHEMY_DATABASE_URI'] ="postgres://ennyxfplcevzvw:956c6a148b3655ad89c612615fb2ab3e634ab8786474899623ee312049301dea@ec2-54-234-13-16.compute-1.amazonaws.com:5432/dapmtl4iufh0r0"
+# app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///" + os.path.join(basedir, 'app.sqlite')
 app.config['SECRET_KEY'] = 'fym-yagmm'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
