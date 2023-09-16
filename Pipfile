@@ -12,6 +12,7 @@ flask-cors = "*"
 flask-bcrypt = "*"
 faker = "*"
 cryptography = "*"
+gunicorn = "*"
 
 [dev-packages]
 
